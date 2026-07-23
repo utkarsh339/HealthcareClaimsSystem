@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="HealthcareClaims.API/HealthcareClaims.API.csproj" />
+  <Project Path="HealthcareClaims.Application/HealthcareClaims.Application.csproj" />
+  <Project Path="HealthcareClaims.Domain/HealthcareClaims.Domain.csproj" />
+  <Project Path="HealthcareClaims.Infrastructure/HealthcareClaims.Infrastructure.csproj" />
+  <Project Path="HealthcareClaims.Persistence/HealthcareClaims.Persistence.csproj" />
+</Solution>

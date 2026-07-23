@@ -1,0 +1,42 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# SQL
+*.mdf
+*.ldf
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Packages
+packages/
+
+# Test Results
+TestResults/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# NuGet
+*.nupkg
+
+# Publish
+publish/
+
+# Others
+*.cache
