@@ -23,8 +23,12 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
-                "An unhandled exception occurred.");
+            _logger.LogError(
+    ex,
+    "Unhandled exception occurred while processing {Method} {Path}. TraceId: {TraceId}",
+    context.Request.Method,
+    context.Request.Path,
+    context.TraceIdentifier);
 
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
