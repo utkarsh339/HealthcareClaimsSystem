@@ -1,5 +1,6 @@
 using HealthcareClaims.API.Middleware;
 using HealthcareClaims.Application;
+using HealthcareClaims.Application.Common.Authentication;
 using HealthcareClaims.Infrastructure;
 using HealthcareClaims.Persistence;
 
@@ -10,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection("JwtSettings"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

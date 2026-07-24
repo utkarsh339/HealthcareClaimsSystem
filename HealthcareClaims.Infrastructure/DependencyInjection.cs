@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Infrastructure.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HealthcareClaims.Infrastructure;
 
@@ -12,6 +14,7 @@ public static class DependencyInjection
         // Azure Blob
         // JWT
         // External APIs
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
