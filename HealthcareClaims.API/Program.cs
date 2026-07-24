@@ -1,3 +1,4 @@
+using HealthcareClaims.API.Middleware;
 using HealthcareClaims.Application;
 using HealthcareClaims.Infrastructure;
 using HealthcareClaims.Persistence;
@@ -26,6 +27,8 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
