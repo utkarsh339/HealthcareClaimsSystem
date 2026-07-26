@@ -1,4 +1,6 @@
-﻿namespace HealthcareClaims.Domain.Entities;
+﻿using HealthcareClaims.Domain.Enums;
+
+namespace HealthcareClaims.Domain.Entities;
 
 public class User
 {
@@ -12,7 +14,7 @@ public class User
 
     public string PasswordHash { get; set; } = string.Empty;
 
-    public string Role { get; set; } = string.Empty;
+    public UserRole Role { get; set; } 
 
     public bool IsActive { get; set; }
 

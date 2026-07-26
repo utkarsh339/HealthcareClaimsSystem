@@ -15,6 +15,7 @@ public static class DependencyInjection
         // JWT
         // External APIs
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         return services;
     }
