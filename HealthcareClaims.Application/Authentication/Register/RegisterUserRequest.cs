@@ -1,6 +1,7 @@
 ﻿
-namespace HealthcareClaims.Application.Authentication.Register;
 using HealthcareClaims.Domain.Enums;
+namespace HealthcareClaims.Application.Authentication.Register;
+
 
 public record RegisterUserRequest(
     string FirstName,

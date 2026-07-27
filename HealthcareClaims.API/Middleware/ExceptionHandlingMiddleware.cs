@@ -75,7 +75,7 @@ public class ExceptionHandlingMiddleware
 
                 break;
 
-            case UnauthorizedAccessException:
+            case UnauthorizedAccessException unauthorizedException:
 
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
@@ -83,7 +83,7 @@ public class ExceptionHandlingMiddleware
                 {
                     StatusCode = context.Response.StatusCode,
                     Title = "Unauthorized",
-                    Message = "You are not authorized to perform this action.",
+                    Message = unauthorizedException.Message,
                     TraceId = context.TraceIdentifier
                 };
 
