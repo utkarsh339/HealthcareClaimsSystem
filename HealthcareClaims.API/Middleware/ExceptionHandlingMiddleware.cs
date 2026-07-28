@@ -89,6 +89,20 @@ public class ExceptionHandlingMiddleware
 
                 break;
 
+            case KeyNotFoundException keyNotFoundException:
+
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+                response = new ErrorResponse
+                {
+                    StatusCode = context.Response.StatusCode,
+                    Title = "Resource Not Found",
+                    Message = keyNotFoundException.Message,
+                    TraceId = context.TraceIdentifier
+                };
+
+                break;
+
             default:
 
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
