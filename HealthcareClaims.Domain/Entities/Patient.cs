@@ -1,4 +1,6 @@
-﻿namespace HealthcareClaims.Domain.Entities;
+﻿using HealthcareClaims.Domain.Enums;
+
+namespace HealthcareClaims.Domain.Entities;
 
 public class Patient
 {
@@ -10,7 +12,7 @@ public class Patient
 
     public DateOnly DateOfBirth { get; set; }
 
-    public string Gender { get; set; } = string.Empty;
+    public Gender Gender { get; set; }
 
     public string Email { get; set; } = string.Empty;
 

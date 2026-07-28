@@ -48,17 +48,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly",
+        policy => policy.RequireRole("Admin"));
 
-    options.AddPolicy("ClaimsProcessorOnly", policy =>
-        policy.RequireRole("ClaimsProcessor"));
+    options.AddPolicy("ClaimsProcessorOnly",
+        policy => policy.RequireRole("ClaimsProcessor"));
 
-    options.AddPolicy("MedicalReviewerOnly", policy =>
-        policy.RequireRole("MedicalReviewer"));
+    options.AddPolicy("MedicalReviewerOnly",
+        policy => policy.RequireRole("MedicalReviewer"));
 
-    options.AddPolicy("ProviderStaffOnly", policy =>
-        policy.RequireRole("ProviderStaff"));
+    options.AddPolicy("ProviderStaffOnly",
+        policy => policy.RequireRole("ProviderStaff"));
+
+    options.AddPolicy("PatientReadAccess",
+        policy => policy.RequireRole(
+            "Admin",
+            "ClaimsProcessor",
+            "MedicalReviewer",
+            "ProviderStaff"));
+
+    options.AddPolicy("PatientWriteAccess",
+        policy => policy.RequireRole(
+            "Admin",
+            "ProviderStaff"));
 });
 
 var app = builder.Build();

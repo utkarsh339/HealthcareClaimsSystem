@@ -20,6 +20,11 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(p => p.Gender)
+            .HasConversion<string>()
+            .IsRequired()
+            .HasMaxLength(20);
+
         builder.Property(p => p.Email)
             .HasMaxLength(200);
 
