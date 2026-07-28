@@ -46,7 +46,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("ClaimsProcessorOnly", policy =>
+        policy.RequireRole("ClaimsProcessor"));
+
+    options.AddPolicy("MedicalReviewerOnly", policy =>
+        policy.RequireRole("MedicalReviewer"));
+
+    options.AddPolicy("ProviderStaffOnly", policy =>
+        policy.RequireRole("ProviderStaff"));
+});
 
 var app = builder.Build();
 
