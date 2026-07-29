@@ -8,32 +8,51 @@ public class ProviderConfiguration : IEntityTypeConfiguration<Provider>
 {
     public void Configure(EntityTypeBuilder<Provider> builder)
     {
-        builder.ToTable("Providers");
+        builder.HasKey(p => p.Id);
 
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.ProviderName)
+        builder.Property(p => p.ProviderName)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(x => x.ProviderType)
+        builder.Property(p => p.ProviderType)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(p => p.NPI)
             .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.LicenseNumber)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.ContactPerson)
-            .HasMaxLength(100);
-
-        builder.Property(x => x.PhoneNumber)
             .HasMaxLength(20);
 
-        builder.Property(x => x.Email)
-            .HasMaxLength(150);
+        builder.HasIndex(p => p.NPI)
+            .IsUnique();
 
-        builder.Property(x => x.Address)
+        builder.Property(p => p.Email)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Property(p => p.PhoneNumber)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(p => p.Address)
+            .IsRequired()
             .HasMaxLength(500);
+
+        builder.Property(p => p.City)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(p => p.State)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(p => p.ZipCode)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(p => p.IsActive)
+            .HasDefaultValue(true);
+
+        builder.Property(p => p.CreatedAt)
+            .IsRequired();
     }
 }

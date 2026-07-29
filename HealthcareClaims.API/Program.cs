@@ -71,6 +71,18 @@ builder.Services.AddAuthorization(options =>
         policy => policy.RequireRole(
             "Admin",
             "ProviderStaff"));
+
+    options.AddPolicy("ProviderReadAccess",
+    policy => policy.RequireRole(
+        "Admin",
+        "ClaimsProcessor",
+        "MedicalReviewer",
+        "ProviderStaff"));
+
+    options.AddPolicy("ProviderWriteAccess",
+        policy => policy.RequireRole(
+            "Admin",
+            "ProviderStaff"));
 });
 
 var app = builder.Build();

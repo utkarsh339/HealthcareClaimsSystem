@@ -1,4 +1,6 @@
-﻿namespace HealthcareClaims.Domain.Entities;
+﻿using HealthcareClaims.Domain.Enums;
+
+namespace HealthcareClaims.Domain.Entities;
 
 public class Provider
 {
@@ -6,17 +8,23 @@ public class Provider
 
     public string ProviderName { get; set; } = string.Empty;
 
-    public string ProviderType { get; set; } = string.Empty;
+    public ProviderType ProviderType { get; set; }
 
-    public string LicenseNumber { get; set; } = string.Empty;
-
-    public string ContactPerson { get; set; } = string.Empty;
-
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string NPI { get; set; } = string.Empty;
 
     public string Email { get; set; } = string.Empty;
 
+    public string PhoneNumber { get; set; } = string.Empty;
+
     public string Address { get; set; } = string.Empty;
 
-    public bool IsActive { get; set; }
+    public string City { get; set; } = string.Empty;
+
+    public string State { get; set; } = string.Empty;
+
+    public string ZipCode { get; set; } = string.Empty;
+
+    public bool IsActive { get; set; } = true;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

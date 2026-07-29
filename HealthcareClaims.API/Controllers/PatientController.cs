@@ -1,5 +1,5 @@
 ﻿using HealthcareClaims.Application.Patients.Common;
-using HealthcareClaims.Application.Patients.CreatePatient;
+using HealthcareClaims.API.Models.Patients;
 using HealthcareClaims.Application.Patients.DeletePatient;
 using HealthcareClaims.Application.Patients.GetAllPatients;
 using HealthcareClaims.Application.Patients.GetPatientById;
@@ -7,6 +7,7 @@ using HealthcareClaims.Application.Patients.UpdatePatient;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthcareClaims.Application.Patients.CreatePatient;
 
 namespace HealthcareClaims.API.Controllers;
 

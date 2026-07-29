@@ -9,6 +9,8 @@ public interface IApplicationDbContext
 
     DbSet<Patient> Patients { get; }
 
+    DbSet<Provider> Providers { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }
