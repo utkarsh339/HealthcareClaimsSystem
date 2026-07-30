@@ -92,13 +92,8 @@ namespace HealthcareClaims.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("CoveragePercentage")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<decimal>("DeductibleAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateOnly>("EffectiveDate")
                         .HasColumnType("date");
@@ -106,34 +101,45 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Property<DateOnly>("ExpirationDate")
                         .HasColumnType("date");
 
+                    b.Property<string>("GroupNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("InsuranceCompany")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
-                    b.Property<decimal>("OutOfPocketMaximum")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PlanName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("PolicyNumber")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("PolicyNumber")
+                        .IsUnique();
 
                     b.ToTable("InsurancePolicies", (string)null);
                 });
@@ -380,9 +386,9 @@ namespace HealthcareClaims.Persistence.Migrations
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.InsurancePolicy", b =>
                 {
                     b.HasOne("HealthcareClaims.Domain.Entities.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("InsurancePolicies")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Patient");
@@ -413,6 +419,11 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.Patient", b =>
+                {
+                    b.Navigation("InsurancePolicies");
                 });
 #pragma warning restore 612, 618
         }

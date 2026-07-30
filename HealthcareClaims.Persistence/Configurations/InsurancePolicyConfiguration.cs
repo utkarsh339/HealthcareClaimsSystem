@@ -10,32 +10,37 @@ public class InsurancePolicyConfiguration : IEntityTypeConfiguration<InsurancePo
     {
         builder.ToTable("InsurancePolicies");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(ip => ip.Id);
 
-        builder.Property(x => x.PolicyNumber)
+        builder.Property(ip => ip.InsuranceCompany)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(200);
 
-        builder.Property(x => x.InsuranceCompany)
-            .IsRequired()
-            .HasMaxLength(150);
-
-        builder.Property(x => x.PlanName)
+        builder.Property(ip => ip.PolicyNumber)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(x => x.CoveragePercentage)
-            .HasPrecision(5, 2);
+        builder.Property(ip => ip.MemberId)
+            .IsRequired()
+            .HasMaxLength(100);
 
-        builder.Property(x => x.DeductibleAmount)
-            .HasPrecision(18, 2);
+        builder.Property(ip => ip.GroupNumber)
+            .HasMaxLength(100);
 
-        builder.Property(x => x.OutOfPocketMaximum)
-            .HasPrecision(18, 2);
+        builder.Property(ip => ip.PlanName)
+            .HasMaxLength(150);
 
-        builder.HasOne(x => x.Patient)
-            .WithMany()
-            .HasForeignKey(x => x.PatientId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(ip => ip.IsActive)
+            .HasDefaultValue(true);
+
+        builder.HasOne(ip => ip.Patient)
+            .WithMany(p => p.InsurancePolicies)
+            .HasForeignKey(ip => ip.PatientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(ip => ip.PatientId);
+
+        builder.HasIndex(ip => ip.PolicyNumber)
+            .IsUnique();
     }
 }

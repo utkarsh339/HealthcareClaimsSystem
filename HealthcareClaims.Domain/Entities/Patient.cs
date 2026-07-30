@@ -21,4 +21,7 @@ public class Patient
     public string Address { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation Property
+    public ICollection<InsurancePolicy> InsurancePolicies { get; set; } = new List<InsurancePolicy>();
 }

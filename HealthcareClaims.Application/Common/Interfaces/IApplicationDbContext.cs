@@ -11,6 +11,8 @@ public interface IApplicationDbContext
 
     DbSet<Provider> Providers { get; }
 
+    DbSet<InsurancePolicy> InsurancePolicies { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

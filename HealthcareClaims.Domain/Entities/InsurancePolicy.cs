@@ -4,25 +4,26 @@ public class InsurancePolicy
 {
     public Guid Id { get; set; }
 
-    public string PolicyNumber { get; set; } = string.Empty;
+    public Guid PatientId { get; set; }
 
     public string InsuranceCompany { get; set; } = string.Empty;
 
+    public string PolicyNumber { get; set; } = string.Empty;
+
+    public string MemberId { get; set; } = string.Empty;
+
+    public string GroupNumber { get; set; } = string.Empty;
+
     public string PlanName { get; set; } = string.Empty;
-
-    public decimal CoveragePercentage { get; set; }
-
-    public decimal DeductibleAmount { get; set; }
-
-    public decimal OutOfPocketMaximum { get; set; }
 
     public DateOnly EffectiveDate { get; set; }
 
     public DateOnly ExpirationDate { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
-    public Guid PatientId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // Navigation Property
     public Patient Patient { get; set; } = null!;
 }
