@@ -34,4 +34,6 @@ public class PriorAuthorization
     public Provider Provider { get; set; } = null!;
 
     public InsurancePolicy InsurancePolicy { get; set; } = null!;
+
+    public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 }

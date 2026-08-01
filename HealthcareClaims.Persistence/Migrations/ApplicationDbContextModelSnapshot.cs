@@ -29,7 +29,9 @@ namespace HealthcareClaims.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ApprovedAmount")
-                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BilledAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ClaimNumber")
@@ -37,10 +39,13 @@ namespace HealthcareClaims.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DiagnosisCode")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid>("InsurancePolicyId")
                         .HasColumnType("uniqueidentifier");
@@ -48,42 +53,47 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("PatientResponsibilityAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid>("PriorAuthorizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ProcedureCode")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("ServiceDate")
                         .HasColumnType("date");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SubmittedAt")
+                    b.Property<DateTime?>("SubmittedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ClaimNumber")
+                        .IsUnique();
 
                     b.HasIndex("InsurancePolicyId");
 
                     b.HasIndex("PatientId");
 
+                    b.HasIndex("PriorAuthorizationId");
+
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("Claims", (string)null);
+                    b.ToTable("Claims");
                 });
 
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.InsurancePolicy", b =>
@@ -364,19 +374,25 @@ namespace HealthcareClaims.Persistence.Migrations
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.Claim", b =>
                 {
                     b.HasOne("HealthcareClaims.Domain.Entities.InsurancePolicy", "InsurancePolicy")
-                        .WithMany()
+                        .WithMany("Claims")
                         .HasForeignKey("InsurancePolicyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthcareClaims.Domain.Entities.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("Claims")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HealthcareClaims.Domain.Entities.PriorAuthorization", "PriorAuthorization")
+                        .WithMany("Claims")
+                        .HasForeignKey("PriorAuthorizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HealthcareClaims.Domain.Entities.Provider", "Provider")
-                        .WithMany()
+                        .WithMany("Claims")
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -384,6 +400,8 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Navigation("InsurancePolicy");
 
                     b.Navigation("Patient");
+
+                    b.Navigation("PriorAuthorization");
 
                     b.Navigation("Provider");
                 });
@@ -428,18 +446,29 @@ namespace HealthcareClaims.Persistence.Migrations
 
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.InsurancePolicy", b =>
                 {
+                    b.Navigation("Claims");
+
                     b.Navigation("PriorAuthorizations");
                 });
 
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.Patient", b =>
                 {
+                    b.Navigation("Claims");
+
                     b.Navigation("InsurancePolicies");
 
                     b.Navigation("PriorAuthorizations");
                 });
 
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.PriorAuthorization", b =>
+                {
+                    b.Navigation("Claims");
+                });
+
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.Provider", b =>
                 {
+                    b.Navigation("Claims");
+
                     b.Navigation("PriorAuthorizations");
                 });
 #pragma warning restore 612, 618

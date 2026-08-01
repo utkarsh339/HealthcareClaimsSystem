@@ -1,4 +1,5 @@
 ﻿using HealthcareClaims.Domain.Entities;
+using HealthcareClaims.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,45 +9,53 @@ public class ClaimConfiguration : IEntityTypeConfiguration<Claim>
 {
     public void Configure(EntityTypeBuilder<Claim> builder)
     {
-        builder.ToTable("Claims");
+        builder.HasKey(c => c.Id);
 
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.ClaimNumber)
+        builder.Property(c => c.ClaimNumber)
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(x => x.TotalAmount)
-            .HasPrecision(18, 2);
+        builder.HasIndex(c => c.ClaimNumber)
+            .IsUnique();
 
-        builder.Property(x => x.ApprovedAmount)
-            .HasPrecision(18, 2);
+        builder.Property(c => c.DiagnosisCode)
+            .IsRequired()
+            .HasMaxLength(20);
 
-        builder.Property(x => x.PatientResponsibilityAmount)
-            .HasPrecision(18, 2);
+        builder.Property(c => c.ProcedureCode)
+            .IsRequired()
+            .HasMaxLength(20);
 
-        builder.Property(x => x.DiagnosisCode)
-            .HasMaxLength(50);
+        builder.Property(c => c.BilledAmount)
+            .HasColumnType("decimal(18,2)");
 
-        builder.Property(x => x.ProcedureCode)
-            .HasMaxLength(50);
+        builder.Property(c => c.ApprovedAmount)
+            .HasColumnType("decimal(18,2)");
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(50);
+        builder.Property(c => c.Status)
+            .HasConversion<string>();
 
-        builder.HasOne(x => x.Patient)
-            .WithMany()
-            .HasForeignKey(x => x.PatientId)
+        builder.Property(c => c.CreatedAt)
+            .IsRequired();
+
+        builder.HasOne(c => c.Patient)
+            .WithMany(p => p.Claims)
+            .HasForeignKey(c => c.PatientId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.Provider)
-            .WithMany()
-            .HasForeignKey(x => x.ProviderId)
+        builder.HasOne(c => c.Provider)
+            .WithMany(p => p.Claims)
+            .HasForeignKey(c => c.ProviderId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.InsurancePolicy)
-            .WithMany()
-            .HasForeignKey(x => x.InsurancePolicyId)
+        builder.HasOne(c => c.InsurancePolicy)
+            .WithMany(i => i.Claims)
+            .HasForeignKey(c => c.InsurancePolicyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(c => c.PriorAuthorization)
+            .WithMany(pa => pa.Claims)
+            .HasForeignKey(c => c.PriorAuthorizationId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

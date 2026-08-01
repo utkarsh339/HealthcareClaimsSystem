@@ -29,4 +29,6 @@ public class Provider
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<PriorAuthorization> PriorAuthorizations { get; set; } = new List<PriorAuthorization>();
+
+    public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 }

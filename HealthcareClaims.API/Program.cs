@@ -113,6 +113,23 @@ builder.Services.AddAuthorization(options =>
                 UserRole.Admin.ToString(),
                 UserRole.ProviderStaff.ToString(),
                 UserRole.MedicalReviewer.ToString()));
+
+    options.AddPolicy(
+    "ClaimReadAccess",
+    policy =>
+        policy.RequireRole(
+            UserRole.Admin.ToString(),
+            UserRole.ClaimsProcessor.ToString(),
+            UserRole.MedicalReviewer.ToString(),
+            UserRole.ProviderStaff.ToString()));
+
+    options.AddPolicy(
+        "ClaimWriteAccess",
+        policy =>
+            policy.RequireRole(
+                UserRole.Admin.ToString(),
+                UserRole.ProviderStaff.ToString(),
+                UserRole.ClaimsProcessor.ToString()));
 });
 
 var app = builder.Build();

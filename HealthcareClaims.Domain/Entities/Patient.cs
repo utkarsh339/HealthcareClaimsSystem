@@ -26,4 +26,6 @@ public class Patient
     public ICollection<InsurancePolicy> InsurancePolicies { get; set; } = new List<InsurancePolicy>();
 
     public ICollection<PriorAuthorization> PriorAuthorizations { get; set; } = new List<PriorAuthorization>();
+
+    public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 }
