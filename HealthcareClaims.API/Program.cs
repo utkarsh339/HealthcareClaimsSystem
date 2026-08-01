@@ -1,12 +1,13 @@
-using System.Text;
-using System.Text.Json.Serialization;
 using HealthcareClaims.API.Middleware;
 using HealthcareClaims.Application;
 using HealthcareClaims.Application.Common.Authentication;
+using HealthcareClaims.Domain.Enums;
 using HealthcareClaims.Infrastructure;
 using HealthcareClaims.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,23 @@ builder.Services.AddAuthorization(options =>
         policy => policy.RequireRole(
             "Admin",
             "ProviderStaff"));
+
+    options.AddPolicy(
+    "PriorAuthorizationReadAccess",
+    policy =>
+        policy.RequireRole(
+            UserRole.Admin.ToString(),
+            UserRole.ClaimsProcessor.ToString(),
+            UserRole.MedicalReviewer.ToString(),
+            UserRole.ProviderStaff.ToString()));
+
+    options.AddPolicy(
+        "PriorAuthorizationWriteAccess",
+        policy =>
+            policy.RequireRole(
+                UserRole.Admin.ToString(),
+                UserRole.ProviderStaff.ToString(),
+                UserRole.MedicalReviewer.ToString()));
 });
 
 var app = builder.Build();

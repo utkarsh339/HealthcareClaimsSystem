@@ -13,6 +13,10 @@ public interface IApplicationDbContext
 
     DbSet<InsurancePolicy> InsurancePolicies { get; }
 
+    DbSet<PriorAuthorization> PriorAuthorizations { get; }
+
+    DbSet<Claim> Claims { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
 ﻿using HealthcareClaims.Domain.Entities;
+using HealthcareClaims.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,37 +11,49 @@ public class PriorAuthorizationConfiguration : IEntityTypeConfiguration<PriorAut
     {
         builder.ToTable("PriorAuthorizations");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(pa => pa.Id);
 
-        builder.Property(x => x.AuthorizationNumber)
+        builder.Property(pa => pa.DiagnosisCode)
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(x => x.RequestedProcedureCode)
+        builder.Property(pa => pa.ProcedureCode)
+            .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(x => x.DiagnosisCode)
-            .HasMaxLength(50);
+        builder.Property(pa => pa.ServiceDescription)
+            .IsRequired()
+            .HasMaxLength(500);
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(50);
+        builder.Property(pa => pa.Status)
+            .HasConversion<string>()
+            .IsRequired()
+            .HasMaxLength(40);
 
-        builder.Property(x => x.ReviewerComments)
+        builder.Property(pa => pa.ReviewNotes)
             .HasMaxLength(1000);
 
-        builder.HasOne(x => x.Patient)
-            .WithMany()
-            .HasForeignKey(x => x.PatientId)
+        builder.HasOne(pa => pa.Patient)
+            .WithMany(p => p.PriorAuthorizations)
+            .HasForeignKey(pa => pa.PatientId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.Provider)
-            .WithMany()
-            .HasForeignKey(x => x.ProviderId)
+        builder.HasOne(pa => pa.Provider)
+            .WithMany(p => p.PriorAuthorizations)
+            .HasForeignKey(pa => pa.ProviderId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.InsurancePolicy)
-            .WithMany()
-            .HasForeignKey(x => x.InsurancePolicyId)
+        builder.HasOne(pa => pa.InsurancePolicy)
+            .WithMany(ip => ip.PriorAuthorizations)
+            .HasForeignKey(pa => pa.InsurancePolicyId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(pa => pa.PatientId);
+
+        builder.HasIndex(pa => pa.ProviderId);
+
+        builder.HasIndex(pa => pa.InsurancePolicyId);
+
+        builder.HasIndex(pa => pa.Status);
     }
 }

@@ -1,10 +1,10 @@
-﻿namespace HealthcareClaims.Domain.Entities;
+﻿using HealthcareClaims.Domain.Enums;
+
+namespace HealthcareClaims.Domain.Entities;
 
 public class PriorAuthorization
 {
     public Guid Id { get; set; }
-
-    public string AuthorizationNumber { get; set; } = string.Empty;
 
     public Guid PatientId { get; set; }
 
@@ -12,18 +12,23 @@ public class PriorAuthorization
 
     public Guid InsurancePolicyId { get; set; }
 
-    public string RequestedProcedureCode { get; set; } = string.Empty;
-
     public string DiagnosisCode { get; set; } = string.Empty;
 
-    public DateTime RequestedAt { get; set; }
+    public string ProcedureCode { get; set; } = string.Empty;
 
-    public DateTime? ReviewedAt { get; set; }
+    public string ServiceDescription { get; set; } = string.Empty;
 
-    public string Status { get; set; } = string.Empty;
+    public DateTime RequestedDate { get; set; } = DateTime.UtcNow;
 
-    public string? ReviewerComments { get; set; }
+    public PriorAuthorizationStatus Status { get; set; } = PriorAuthorizationStatus.Pending;
 
+    public string? ReviewNotes { get; set; }
+
+    public DateTime? DecisionDate { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation Properties
     public Patient Patient { get; set; } = null!;
 
     public Provider Provider { get; set; } = null!;

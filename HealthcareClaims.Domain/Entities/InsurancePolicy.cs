@@ -26,4 +26,6 @@ public class InsurancePolicy
 
     // Navigation Property
     public Patient Patient { get; set; } = null!;
+
+    public ICollection<PriorAuthorization> PriorAuthorizations { get; set; } = new List<PriorAuthorization>();
 }

@@ -196,10 +196,11 @@ namespace HealthcareClaims.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AuthorizationNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DecisionDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DiagnosisCode")
                         .IsRequired()
@@ -212,28 +213,30 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ProcedureCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("RequestedAt")
+                    b.Property<DateTime>("RequestedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RequestedProcedureCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("ReviewedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReviewerComments")
+                    b.Property<string>("ReviewNotes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("ServiceDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -242,6 +245,8 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.HasIndex("PatientId");
 
                     b.HasIndex("ProviderId");
+
+                    b.HasIndex("Status");
 
                     b.ToTable("PriorAuthorizations", (string)null);
                 });
@@ -397,19 +402,19 @@ namespace HealthcareClaims.Persistence.Migrations
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.PriorAuthorization", b =>
                 {
                     b.HasOne("HealthcareClaims.Domain.Entities.InsurancePolicy", "InsurancePolicy")
-                        .WithMany()
+                        .WithMany("PriorAuthorizations")
                         .HasForeignKey("InsurancePolicyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthcareClaims.Domain.Entities.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("PriorAuthorizations")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthcareClaims.Domain.Entities.Provider", "Provider")
-                        .WithMany()
+                        .WithMany("PriorAuthorizations")
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -421,9 +426,21 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Navigation("Provider");
                 });
 
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.InsurancePolicy", b =>
+                {
+                    b.Navigation("PriorAuthorizations");
+                });
+
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.Patient", b =>
                 {
                     b.Navigation("InsurancePolicies");
+
+                    b.Navigation("PriorAuthorizations");
+                });
+
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.Provider", b =>
+                {
+                    b.Navigation("PriorAuthorizations");
                 });
 #pragma warning restore 612, 618
         }
