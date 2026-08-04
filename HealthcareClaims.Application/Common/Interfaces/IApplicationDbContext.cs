@@ -17,6 +17,8 @@ public interface IApplicationDbContext
 
     DbSet<Claim> Claims { get; }
 
+    DbSet<Payment> Payments { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

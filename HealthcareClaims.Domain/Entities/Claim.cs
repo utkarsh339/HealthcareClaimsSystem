@@ -45,4 +45,6 @@ public class Claim
     public InsurancePolicy InsurancePolicy { get; set; } = null!;
 
     public PriorAuthorization PriorAuthorization { get; set; } = null!;
+
+    public Payment? Payment { get; set; }
 }

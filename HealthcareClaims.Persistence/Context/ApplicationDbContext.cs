@@ -23,6 +23,8 @@ public class ApplicationDbContext
 
     public DbSet<PriorAuthorization> PriorAuthorizations => Set<PriorAuthorization>();
 
+    public DbSet<Payment> Payments => Set<Payment>();
+
     public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

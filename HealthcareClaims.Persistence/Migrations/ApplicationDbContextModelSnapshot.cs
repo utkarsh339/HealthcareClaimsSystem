@@ -200,6 +200,46 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.ToTable("Patients", (string)null);
                 });
 
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ClaimId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClaimId")
+                        .IsUnique();
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.PriorAuthorization", b =>
                 {
                     b.Property<Guid>("Id")
@@ -417,6 +457,17 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("HealthcareClaims.Domain.Entities.Claim", "Claim")
+                        .WithOne("Payment")
+                        .HasForeignKey("HealthcareClaims.Domain.Entities.Payment", "ClaimId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Claim");
+                });
+
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.PriorAuthorization", b =>
                 {
                     b.HasOne("HealthcareClaims.Domain.Entities.InsurancePolicy", "InsurancePolicy")
@@ -442,6 +493,11 @@ namespace HealthcareClaims.Persistence.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("HealthcareClaims.Domain.Entities.Claim", b =>
+                {
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("HealthcareClaims.Domain.Entities.InsurancePolicy", b =>

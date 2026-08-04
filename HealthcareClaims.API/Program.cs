@@ -130,6 +130,22 @@ builder.Services.AddAuthorization(options =>
                 UserRole.Admin.ToString(),
                 UserRole.ProviderStaff.ToString(),
                 UserRole.ClaimsProcessor.ToString()));
+
+    options.AddPolicy("PaymentReadAccess", policy =>
+    {
+        policy.RequireRole(
+            "Admin",
+            "ClaimsProcessor",
+            "MedicalReviewer",
+            "ProviderStaff");
+    });
+
+    options.AddPolicy("PaymentWriteAccess", policy =>
+    {
+        policy.RequireRole(
+            "Admin",
+            "ClaimsProcessor");
+    });
 });
 
 var app = builder.Build();
