@@ -1,4 +1,4 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Payments.Common;
 using HealthcareClaims.Domain.Entities;
 using HealthcareClaims.Domain.Enums;
@@ -11,10 +11,13 @@ public class CreatePaymentCommandHandler
     : IRequestHandler<CreatePaymentCommand, PaymentResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public CreatePaymentCommandHandler(IApplicationDbContext context)
+    public CreatePaymentCommandHandler(IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<PaymentResponse> Handle(
@@ -33,6 +36,10 @@ public class CreatePaymentCommandHandler
         if (claim.Status != ClaimStatus.Approved)
             throw new InvalidOperationException(
                 "Payment can only be created for approved claims.");
+
+        if (request.Amount > claim.ApprovedAmount)
+            throw new InvalidOperationException(
+                "Payment amount cannot exceed the approved claim amount.");
 
         var paymentExists = await _context.Payments
             .AnyAsync(
@@ -55,6 +62,13 @@ public class CreatePaymentCommandHandler
         };
 
         _context.Payments.Add(payment);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "Payment",
+            payment.Id,
+            $"Created payment {payment.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

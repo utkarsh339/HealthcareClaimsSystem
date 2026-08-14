@@ -19,6 +19,8 @@ public interface IApplicationDbContext
 
     DbSet<Payment> Payments { get; }
 
+    DbSet<AuditLog> AuditLogs { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

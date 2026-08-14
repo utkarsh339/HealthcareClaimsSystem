@@ -1,4 +1,4 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.PriorAuthorizations.Common;
 using HealthcareClaims.Domain.Entities;
 using HealthcareClaims.Domain.Enums;
@@ -11,11 +11,14 @@ public class CreatePriorAuthorizationCommandHandler
     : IRequestHandler<CreatePriorAuthorizationCommand, PriorAuthorizationResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public CreatePriorAuthorizationCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<PriorAuthorizationResponse> Handle(
@@ -69,6 +72,13 @@ public class CreatePriorAuthorizationCommandHandler
         };
 
         _context.PriorAuthorizations.Add(priorAuthorization);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "PriorAuthorization",
+            priorAuthorization.Id,
+            $"Created prior authorization {priorAuthorization.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

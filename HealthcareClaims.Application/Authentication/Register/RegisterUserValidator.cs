@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace HealthcareClaims.Application.Authentication.Register;
 
@@ -22,7 +22,5 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
             .NotEmpty()
             .MinimumLength(8);
 
-        RuleFor(x => x.Role)
-            .IsInEnum();
     }
 }

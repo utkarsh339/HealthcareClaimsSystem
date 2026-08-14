@@ -1,7 +1,8 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Patients.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.Patients.UpdatePatient;
 
@@ -9,10 +10,13 @@ public class UpdatePatientCommandHandler
     : IRequestHandler<UpdatePatientCommand, PatientResponse?>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public UpdatePatientCommandHandler(IApplicationDbContext context)
+    public UpdatePatientCommandHandler(IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<PatientResponse?> Handle(
@@ -36,6 +40,13 @@ public class UpdatePatientCommandHandler
         patient.Email = request.Email;
         patient.PhoneNumber = request.PhoneNumber;
         patient.Address = request.Address;
+
+        await _auditService.LogAsync(
+            AuditAction.Update,
+            "Patient",
+            patient.Id,
+            $"Updated patient {patient.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

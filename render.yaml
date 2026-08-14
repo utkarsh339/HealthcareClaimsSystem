@@ -1,0 +1,36 @@
+databases:
+  - name: healthcare-claims-db
+    plan: free
+    region: singapore
+    databaseName: healthcareclaims
+    user: healthcareclaims
+
+services:
+  - type: web
+    name: healthcare-claims-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: "8080"
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: healthcare-claims-db
+          property: connectionString
+      - key: JwtSettings__SecretKey
+        generateValue: true
+      - key: JwtSettings__Issuer
+        value: HealthcareClaimsAPI
+      - key: JwtSettings__Audience
+        value: HealthcareClaimsClient
+      - key: JwtSettings__ExpiryInMinutes
+        value: "60"
+      - key: Cors__AllowedOrigins
+        sync: false
+      - key: Database__EnsureCreated
+        value: "true"

@@ -1,8 +1,9 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Providers.Common;
 using HealthcareClaims.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.Providers.CreateProvider;
 
@@ -10,11 +11,14 @@ public class CreateProviderCommandHandler
     : IRequestHandler<CreateProviderCommand, ProviderResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public CreateProviderCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<ProviderResponse> Handle(
@@ -49,6 +53,13 @@ public class CreateProviderCommandHandler
         };
 
         _context.Providers.Add(provider);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "Provider",
+            provider.Id,
+            $"Created provider {provider.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

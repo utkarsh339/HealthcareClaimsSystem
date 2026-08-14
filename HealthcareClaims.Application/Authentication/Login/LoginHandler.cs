@@ -1,8 +1,9 @@
-﻿using HealthcareClaims.Application.Authentication.Common;
+using HealthcareClaims.Application.Authentication.Common;
 using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.Authentication.Login;
 
@@ -12,15 +13,18 @@ public class LoginHandler
     private readonly IApplicationDbContext _context;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IAuditService _auditService;
 
     public LoginHandler(
         IApplicationDbContext context,
         IPasswordHasher passwordHasher,
-        IJwtTokenGenerator jwtTokenGenerator)
+        IJwtTokenGenerator jwtTokenGenerator,
+        IAuditService auditService)
     {
         _context = context;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
+        _auditService = auditService;
     }
 
     public async Task<AuthResponse> Handle(
@@ -51,6 +55,17 @@ public class LoginHandler
 
         var token =
             _jwtTokenGenerator.GenerateToken(user);
+
+        await _auditService.LogAsync(
+            AuditAction.Login,
+            "User",
+            user.Id,
+            $"User logged in: {user.Email}",
+            user.Id,
+            user.Email,
+            cancellationToken: cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         return new AuthResponse
         {
