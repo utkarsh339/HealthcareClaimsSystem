@@ -1,7 +1,8 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Patients.Common;
 using HealthcareClaims.Domain.Entities;
 using MediatR;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.Patients.CreatePatient;
 
@@ -9,11 +10,14 @@ public class CreatePatientCommandHandler
     : IRequestHandler<CreatePatientCommand, PatientResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public CreatePatientCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<PatientResponse> Handle(
@@ -34,6 +38,13 @@ public class CreatePatientCommandHandler
         };
 
         _context.Patients.Add(patient);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "Patient",
+            patient.Id,
+            $"Created patient {patient.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

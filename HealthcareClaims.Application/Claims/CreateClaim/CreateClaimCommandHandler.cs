@@ -1,4 +1,4 @@
-﻿using HealthcareClaims.Application.Claims.Common;
+using HealthcareClaims.Application.Claims.Common;
 using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Domain.Entities;
 using HealthcareClaims.Domain.Enums;
@@ -11,11 +11,14 @@ public class CreateClaimCommandHandler
     : IRequestHandler<CreateClaimCommand, ClaimResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public CreateClaimCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<ClaimResponse> Handle(
@@ -101,6 +104,13 @@ public class CreateClaimCommandHandler
         };
 
         _context.Claims.Add(claim);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "Claim",
+            claim.Id,
+            $"Created claim {claim.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

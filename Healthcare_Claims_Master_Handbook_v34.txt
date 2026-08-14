@@ -1,0 +1,238 @@
+ENTERPRISE HEALTHCARE CLAIMS PROCESSING & PRIOR AUTHORIZATION PLATFORM
+MASTER PROJECT HANDBOOK — VERSION 34
+STATUS: DEPLOYMENT-READY BASELINE
+
+==================================================
+1. CURRENT STATUS
+==================================================
+
+The application is functionally complete for the implemented modules and has now been prepared for production deployment.
+
+Backend:
+[X] .NET 10 ASP.NET Core Web API
+[X] Clean Architecture: API / Application / Domain / Infrastructure / Persistence
+[X] MediatR + CQRS
+[X] FluentValidation
+[X] JWT authentication
+[X] Policy-based authorization
+[X] Global exception handling
+[X] Patient CRUD
+[X] Provider CRUD
+[X] Insurance Policy CRUD
+[X] Prior Authorization CRUD
+[X] Claims CRUD
+[X] Payments CRUD
+[X] Audit Logs
+[X] Automatic audit logging
+[X] Dashboard API
+[X] Production environment configuration
+[X] Environment-variable secrets
+[X] Configurable CORS
+[X] Health endpoint
+[X] Database connectivity health endpoint
+[X] PostgreSQL EF Core provider
+[X] Docker deployment configuration
+
+Frontend:
+[X] React + Vite
+[X] Redux Toolkit / RTK Query
+[X] Authentication and protected routing
+[X] Dashboard
+[X] Patients CRUD
+[X] Providers CRUD
+[X] Insurance Policies CRUD
+[X] Prior Authorizations CRUD
+[X] Claims CRUD
+[X] Payments CRUD
+[X] Audit Logs
+[X] Capability-based UI visibility
+[X] Production API URL through VITE_API_BASE_URL
+[X] Netlify SPA routing configuration
+
+Deployment:
+[X] Render Docker configuration
+[X] Render Blueprint with PostgreSQL
+[X] Netlify configuration
+[X] Deployment guide
+[X] Production secrets removed from source configuration
+
+==================================================
+2. IMPORTANT DEPLOYMENT ARCHITECTURE
+==================================================
+
+Frontend:
+React/Vite -> Netlify
+
+Backend:
+ASP.NET Core .NET 10 -> Render Docker Web Service
+
+Database:
+PostgreSQL -> Render PostgreSQL
+
+Source control:
+GitHub
+
+==================================================
+3. DATABASE PROVIDER CHANGE
+==================================================
+
+The original project used SQL Server-specific EF Core migrations.
+
+For the recommended no-Azure deployment architecture, the persistence provider has been changed to PostgreSQL using Npgsql.EntityFrameworkCore.PostgreSQL 10.0.3.
+
+The old SQL Server migrations were removed from the deployment package because provider-specific SQL Server migrations must not be applied to PostgreSQL.
+
+For the first deployment, Database:EnsureCreated=true creates the schema from the current EF Core model.
+
+Future schema changes should use newly generated PostgreSQL EF Core migrations and should be applied through a controlled deployment process.
+
+==================================================
+4. PRODUCTION SECURITY CHANGES
+==================================================
+
+Production database credentials are no longer stored in appsettings.json.
+
+Production JWT signing secret is no longer stored in appsettings.json.
+
+CORS origins are configured through Cors__AllowedOrigins.
+
+The frontend production API URL is configured through VITE_API_BASE_URL.
+
+HTTPS redirection is only enabled in Development because Render terminates HTTPS at the platform edge.
+
+Unexpected server exceptions return a generic message while retaining a TraceId for diagnostics.
+
+==================================================
+5. HEALTH ENDPOINTS
+==================================================
+
+GET /health
+
+Basic API health response.
+
+GET /health/db
+
+Checks that the API can connect to PostgreSQL.
+
+Render uses /health as the service health check.
+
+==================================================
+6. REQUIRED PRODUCTION ENVIRONMENT VARIABLES
+==================================================
+
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_HTTP_PORTS=8080
+ConnectionStrings__DefaultConnection=<Render PostgreSQL connection string>
+JwtSettings__SecretKey=<random secret, minimum 32 characters>
+JwtSettings__Issuer=HealthcareClaimsAPI
+JwtSettings__Audience=HealthcareClaimsClient
+JwtSettings__ExpiryInMinutes=60
+Cors__AllowedOrigins=https://<netlify-domain>
+Database__EnsureCreated=true
+
+Frontend:
+VITE_API_BASE_URL=https://<render-api-domain>/api
+
+==================================================
+7. DEPLOYMENT FILES
+==================================================
+
+Dockerfile
+.dockerignore
+render.yaml
+DEPLOYMENT.md
+healthcare-claims-frontend/netlify.toml
+healthcare-claims-frontend/.env.example
+
+==================================================
+8. DEPLOYMENT ORDER
+==================================================
+
+1. Create GitHub repository.
+2. Push this project.
+3. Create the Render Blueprint from render.yaml.
+4. Supply the Netlify frontend origin when Render asks for Cors__AllowedOrigins.
+5. Verify /health and /health/db.
+6. Deploy the React frontend to Netlify.
+7. Set VITE_API_BASE_URL to the Render API /api URL.
+8. Update Cors__AllowedOrigins if the final Netlify domain changed.
+9. Perform production smoke testing.
+
+==================================================
+9. PRODUCTION SMOKE TEST
+==================================================
+
+Authentication:
+[ ] Register
+[ ] Login
+[ ] Invalid credentials display correctly
+[ ] JWT protected requests work
+[ ] Logout
+
+Dashboard:
+[ ] Dashboard loads
+[ ] KPI data loads
+[ ] Status breakdown loads
+
+Patients:
+[ ] List
+[ ] Search
+[ ] Create
+[ ] Update
+[ ] Delete according to role
+
+Providers:
+[ ] List
+[ ] Search
+[ ] Create
+[ ] Update
+[ ] Delete according to role
+
+Insurance Policies:
+[ ] List
+[ ] Create
+[ ] Update
+[ ] Delete according to role
+
+Prior Authorizations:
+[ ] List
+[ ] Create
+[ ] Update
+[ ] Delete
+[ ] Status handling
+
+Claims:
+[ ] List
+[ ] Create
+[ ] Update
+[ ] Delete
+[ ] Status processing
+
+Payments:
+[ ] List
+[ ] Create
+[ ] Update
+[ ] Delete
+[ ] Approved-claim guard
+
+Audit Logs:
+[ ] Logs visible to authorized roles
+[ ] Audit entries created by mutations
+
+Infrastructure:
+[ ] /health returns 200
+[ ] /health/db returns 200
+[ ] Frontend can call API
+[ ] No CORS errors
+[ ] React deep links work after refresh
+[ ] HTTPS works
+
+==================================================
+10. KNOWN DEPLOYMENT NOTE
+==================================================
+
+This package is deployment-ready for a fresh PostgreSQL database.
+
+Because the previous database migrations were SQL Server-specific and the environment was changed to PostgreSQL, the first deployment uses EnsureCreated rather than attempting to reuse those migrations.
+
+This is appropriate for a fresh deployment. It should not be treated as the long-term database migration strategy.

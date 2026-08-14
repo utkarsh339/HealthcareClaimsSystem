@@ -1,8 +1,9 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.InsurancePolicies.Common;
 using HealthcareClaims.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.InsurancePolicies.CreateInsurancePolicy;
 
@@ -10,11 +11,14 @@ public class CreateInsurancePolicyCommandHandler
     : IRequestHandler<CreateInsurancePolicyCommand, InsurancePolicyResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public CreateInsurancePolicyCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<InsurancePolicyResponse> Handle(
@@ -53,6 +57,13 @@ public class CreateInsurancePolicyCommandHandler
         };
 
         _context.InsurancePolicies.Add(insurancePolicy);
+
+        await _auditService.LogAsync(
+            AuditAction.Create,
+            "InsurancePolicy",
+            insurancePolicy.Id,
+            $"Created insurance policy {insurancePolicy.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

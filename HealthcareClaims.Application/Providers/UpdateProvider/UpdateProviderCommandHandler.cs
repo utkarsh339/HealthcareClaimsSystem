@@ -1,7 +1,8 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.Providers.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.Providers.UpdateProvider;
 
@@ -9,10 +10,13 @@ public class UpdateProviderCommandHandler
     : IRequestHandler<UpdateProviderCommand, ProviderResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public UpdateProviderCommandHandler(IApplicationDbContext context)
+    public UpdateProviderCommandHandler(IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<ProviderResponse> Handle(
@@ -51,6 +55,13 @@ public class UpdateProviderCommandHandler
         provider.State = request.State;
         provider.ZipCode = request.ZipCode;
         provider.IsActive = request.IsActive;
+
+        await _auditService.LogAsync(
+            AuditAction.Update,
+            "Provider",
+            provider.Id,
+            $"Updated provider {provider.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

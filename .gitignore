@@ -1,42 +1,37 @@
-# Visual Studio
+# Visual Studio / IDE
 .vs/
-bin/
-obj/
-
-# User-specific files
+.idea/
+.vscode/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# Logs
-*.log
+# .NET build output
+**/bin/
+**/obj/
 
-# SQL
+# Logs / test output
+*.log
+TestResults/
+publish/
+
+# Local database files
 *.mdf
 *.ldf
 
-# Rider
-.idea/
-
-# VS Code
-.vscode/
-
-# Packages
-packages/
-
-# Test Results
-TestResults/
-
-# OS files
-Thumbs.db
-Desktop.ini
-
 # NuGet
 *.nupkg
+packages/
 
-# Publish
-publish/
+# Node
+healthcare-claims-frontend/node_modules/
+healthcare-claims-frontend/dist/
+healthcare-claims-frontend/.env
+healthcare-claims-frontend/.env.*
+!healthcare-claims-frontend/.env.example
 
-# Others
-*.cache
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store

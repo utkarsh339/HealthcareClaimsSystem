@@ -1,4 +1,4 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.PriorAuthorizations.Common;
 using HealthcareClaims.Domain.Enums;
 using MediatR;
@@ -10,11 +10,14 @@ public class UpdatePriorAuthorizationCommandHandler
     : IRequestHandler<UpdatePriorAuthorizationCommand, PriorAuthorizationResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public UpdatePriorAuthorizationCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<PriorAuthorizationResponse> Handle(
@@ -45,6 +48,13 @@ public class UpdatePriorAuthorizationCommandHandler
         {
             priorAuthorization.DecisionDate = DateTime.UtcNow;
         }
+
+        await _auditService.LogAsync(
+            AuditAction.Update,
+            "PriorAuthorization",
+            priorAuthorization.Id,
+            $"Updated prior authorization {priorAuthorization.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

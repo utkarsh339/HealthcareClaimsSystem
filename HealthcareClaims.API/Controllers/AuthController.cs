@@ -28,8 +28,7 @@ public class AuthController : ControllerBase
             request.FirstName,
             request.LastName,
             request.Email,
-            request.Password,
-            request.Role);
+            request.Password);
 
         var response = await _mediator.Send(command);
 

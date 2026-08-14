@@ -1,9 +1,10 @@
-﻿using HealthcareClaims.API.Models.Claims;
-using HealthcareClaims.Application.Claims.CreateClaim;
+﻿using HealthcareClaims.Application.Claims.CreateClaim;
 using HealthcareClaims.Application.Claims.DeleteClaim;
 using HealthcareClaims.Application.Claims.GetAllClaims;
 using HealthcareClaims.Application.Claims.GetClaimById;
 using HealthcareClaims.Application.Claims.UpdateClaim;
+using HealthcareClaims.Application.Claims.UpdateClaimStatus;
+using HealthcareClaims.API.Models.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,6 +81,21 @@ public class ClaimsController : ControllerBase
             request.Remarks);
 
         var response = await _mediator.Send(command);
+
+        return Ok(response);
+    }
+
+    [HttpPut("{id:guid}/status")]
+    [Authorize(Policy = "ClaimProcessingAccess")]
+    public async Task<IActionResult> UpdateStatus(
+        Guid id,
+        UpdateClaimStatusRequest request)
+    {
+        var response = await _mediator.Send(
+            new UpdateClaimStatusCommand(
+                id,
+                request.Status,
+                request.ApprovedAmount));
 
         return Ok(response);
     }

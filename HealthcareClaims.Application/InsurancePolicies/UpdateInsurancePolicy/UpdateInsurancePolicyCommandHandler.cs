@@ -1,7 +1,8 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Application.InsurancePolicies.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HealthcareClaims.Domain.Enums;
 
 namespace HealthcareClaims.Application.InsurancePolicies.UpdateInsurancePolicy;
 
@@ -9,11 +10,14 @@ public class UpdateInsurancePolicyCommandHandler
     : IRequestHandler<UpdateInsurancePolicyCommand, InsurancePolicyResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
     public UpdateInsurancePolicyCommandHandler(
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<InsurancePolicyResponse> Handle(
@@ -56,6 +60,13 @@ public class UpdateInsurancePolicyCommandHandler
         insurancePolicy.EffectiveDate = request.EffectiveDate;
         insurancePolicy.ExpirationDate = request.ExpirationDate;
         insurancePolicy.IsActive = request.IsActive;
+
+        await _auditService.LogAsync(
+            AuditAction.Update,
+            "InsurancePolicy",
+            insurancePolicy.Id,
+            $"Updated insurance policy {insurancePolicy.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

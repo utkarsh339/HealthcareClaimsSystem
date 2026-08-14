@@ -1,4 +1,4 @@
-﻿using HealthcareClaims.Application.Common.Interfaces;
+using HealthcareClaims.Application.Common.Interfaces;
 using HealthcareClaims.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,13 @@ public class DeletePaymentCommandHandler
     : IRequestHandler<DeletePaymentCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public DeletePaymentCommandHandler(IApplicationDbContext context)
+    public DeletePaymentCommandHandler(IApplicationDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task Handle(
@@ -32,6 +35,13 @@ public class DeletePaymentCommandHandler
                 "Completed payments cannot be deleted.");
 
         _context.Payments.Remove(payment);
+
+        await _auditService.LogAsync(
+            AuditAction.Delete,
+            "Payment",
+            payment.Id,
+            $"Deleted payment {payment.Id}",
+            cancellationToken: cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
     }
