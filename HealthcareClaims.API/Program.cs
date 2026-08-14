@@ -13,6 +13,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+foreach (var jsonSource in builder.Configuration.Sources
+    .OfType<Microsoft.Extensions.Configuration.Json.JsonConfigurationSource>())
+{
+    jsonSource.ReloadOnChange = false;
+}
+
 // Controllers
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
